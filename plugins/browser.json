@@ -1,0 +1,24 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.visualizadorE"
+    },
+    "cordova-plugin-mqtt": {
+      "PACKAGE_NAME": "com.visualizadorE"
+    },
+    "phonegap-plugin-speech-synthesis": {
+      "PACKAGE_NAME": "com.visualizadorE"
+    },
+    "cordovarduino": {
+      "PACKAGE_NAME": "com.visualizadorE"
+    }
+  },
+  "dependent_plugins": {}
+}
