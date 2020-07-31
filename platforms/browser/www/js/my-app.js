@@ -84,7 +84,7 @@ document.addEventListener('deviceready', function () {
         cargarTablaCodigosAzules();
     }
     //
-    serial.requestPermission(successS, error);
+//    serial.requestPermission(successS, error);
     //
     for (var i = 0; i < 5; i++) {
         //
@@ -129,11 +129,74 @@ document.addEventListener('deviceready', function () {
     actualizarTurnos();
     actualizarArrayCiclico();
     //
+    var str = '';
+    var str2 = '';
+    var str3 = '';
+    var control = 0;
+    //
     $$(document).keypress(function (e) {
-//       if(e.which == 13) {
-//           alert('You pressed enter!');
-//       }
-        alert(e);
+        //
+        console.log(e.which);
+        console.log(' = ');
+        console.log(String.fromCharCode(e.which));
+        // decode the received message
+        if (e.which !== 42 && e.which !== 44 && e.which !== 13) {
+            //
+            if (control === 0) {
+                //
+                str += String.fromCharCode(e.which);
+                //
+            } else if (control === 1) {
+                //
+                str2 += String.fromCharCode(e.which);
+                //
+            } else if (control === 2) {
+                //
+                str3 += String.fromCharCode(e.which);
+            }
+        } else if (e.which === 44) {
+            //
+            if (str !== '') {
+                //
+                control++;
+            }
+        } else if (e.which === 13) {
+            //
+            if (str !== '' && str2 !== '' && str3 !== '') {
+                //
+                var int = parseInt(str);
+                var int2 = parseInt(str2);
+                var h = '';
+                var cb = '';
+                var s = parseInt(str3);
+                //
+                if (int > 50) {
+                    //
+                    h = 'II';
+                } else {
+                    //
+                    h = 'Hab. ' + int;
+
+                }
+                //
+                if (int2 > 20) {
+                    //
+                    var b = int2 - 20;
+                    //
+                    cb = 'Baño ' + b;
+                } else {
+                    //
+                    cb = 'Cama ' + int2;
+                }
+                //
+                actualizarArrayTurnos(h, cb, s, int);
+                //
+                str = '';
+                str2 = '';
+                str3 = '';
+                control = 0;
+            }
+        }
     });
 });
 
@@ -451,142 +514,142 @@ function actualizarArrayCiclico() {
     }, 10000);
 }
 
-//
-function successS() {
-    //
-    serial.open({baudRate: 9600}, llamado, error);
-}
-//
-function error(error) {
-    //
-    console.log(error);
-}
+////
+//function successS() {
+//    //
+//    serial.open({baudRate: 9600}, llamado, error);
+//}
+////
+//function error(error) {
+//    //
+//    console.log(error);
+//}
 
 //
-function llamado() {
-    //
-    var errorCallback = function (message) {
-        alert('Error: ' + message);
-    };
-    // register the read callback
-    serial.registerReadCallback(
-            function success(data) {
-                // decode the received message
-                var view = new Uint8Array(data);
-//                var array = view.split(",");
-                var str = '';
-                var str2 = '';
-                var str3 = '';
-                var control = 0;
-                var controlG = 0;
-                var controlS = 0;
-                var controlC = 0;
-                var arrayD = [];
-                //
-                if (view.length >= 1) {
-                    //
-                    var i = 0;
-                    //
-                    while (i < view.length) {
-                        // if we received a \n, the message is complete, display it
-                        var temp_str = String.fromCharCode(view[i]);
-                        var str_esc = escape(temp_str);
-                        //
-                        if (unescape(str_esc) == '*') {
-                            //
-                            if (i > 0) {
-                                //
-                                arrayD[controlC] = {h: str, cb: str2, s: str3};
-                                //
-                                controlC++;
-                                //
-                                control = 0;
-                            }
-                            //
-                            str = '';
-                            str2 = '';
-                            str3 = '';
-                            controlG = 0;
-                            controlS = 0;
-                            //
-                            i += 2;
-                        } else {
-                            //
-                            if (unescape(str_esc) == ',') {
-                                //
-                                control++;
-                            }
-                            //
-                            if (control === 0) {
-                                //
-                                str += unescape(str_esc);
-                                //
-                            } else if (control === 1) {
-                                //
-                                if (controlG > 0) {
-                                    //
-                                    str2 += unescape(str_esc);
-                                }
-                                //
-                                controlG++;
-                            } else {
-                                //
-                                if (controlS > 0) {
-                                    //
-                                    str3 += unescape(str_esc);
-                                }
-                                //
-                                controlS++;
-                            }
-                            //
-                            i++;
-                        }
-                        //
-                        if (i === view.length) {
-                            //
-                            arrayD[controlC] = {h: str, cb: str2, s: str3};
-                        }
-                    }
-                }
-                //
-                if (arrayD.length > 0) {
-                    //
-                    for (var i = 0; i < arrayD.length; i++) {
-                        //
-                        if (arrayD[i]['h'] !== '' && arrayD[i]['cb'] !== '') {
-                            //
-                            var int = parseInt(arrayD[i]['h']);
-                            var int2 = parseInt(arrayD[i]['cb']);
-                            var h = '';
-                            var cb = '';
-                            var s = parseInt(arrayD[i]['s']);
-                            //
-                            if (int > 50) {
-                                //
-                                h = 'II';
-                            } else {
-                                //
-                                h = 'Hab. ' + int;
-
-                            }
-                            //
-                            if (int2 > 20) {
-                                //
-                                var b = int2 - 20;
-                                //
-                                cb = 'Baño ' + b;
-                            } else {
-                                //
-                                cb = 'Cama ' + int2;
-                            }
-                            //
-                            actualizarArrayTurnos(h, cb, s, int);
-                        }
-                    }
-                }
-            }, errorCallback // error attaching the callback
-            );
-}
+//function llamado() {
+//    //
+//    var errorCallback = function (message) {
+//        alert('Error: ' + message);
+//    };
+//    // register the read callback
+//    serial.registerReadCallback(
+//            function success(data) {
+//                // decode the received message
+//                var view = new Uint8Array(data);
+////                var array = view.split(",");
+//                var str = '';
+//                var str2 = '';
+//                var str3 = '';
+//                var control = 0;
+//                var controlG = 0;
+//                var controlS = 0;
+//                var controlC = 0;
+//                var arrayD = [];
+//                //
+//                if (view.length >= 1) {
+//                    //
+//                    var i = 0;
+//                    //
+//                    while (i < view.length) {
+//                        // if we received a \n, the message is complete, display it
+//                        var temp_str = String.fromCharCode(view[i]);
+//                        var str_esc = escape(temp_str);
+//                        //
+//                        if (unescape(str_esc) == '*') {
+//                            //
+//                            if (i > 0) {
+//                                //
+//                                arrayD[controlC] = {h: str, cb: str2, s: str3};
+//                                //
+//                                controlC++;
+//                                //
+//                                control = 0;
+//                            }
+//                            //
+//                            str = '';
+//                            str2 = '';
+//                            str3 = '';
+//                            controlG = 0;
+//                            controlS = 0;
+//                            //
+//                            i += 2;
+//                        } else {
+//                            //
+//                            if (unescape(str_esc) == ',') {
+//                                //
+//                                control++;
+//                            }
+//                            //
+//                            if (control === 0) {
+//                                //
+//                                str += unescape(str_esc);
+//                                //
+//                            } else if (control === 1) {
+//                                //
+//                                if (controlG > 0) {
+//                                    //
+//                                    str2 += unescape(str_esc);
+//                                }
+//                                //
+//                                controlG++;
+//                            } else {
+//                                //
+//                                if (controlS > 0) {
+//                                    //
+//                                    str3 += unescape(str_esc);
+//                                }
+//                                //
+//                                controlS++;
+//                            }
+//                            //
+//                            i++;
+//                        }
+//                        //
+//                        if (i === view.length) {
+//                            //
+//                            arrayD[controlC] = {h: str, cb: str2, s: str3};
+//                        }
+//                    }
+//                }
+//                //
+//                if (arrayD.length > 0) {
+//                    //
+//                    for (var i = 0; i < arrayD.length; i++) {
+//                        //
+//                        if (arrayD[i]['h'] !== '' && arrayD[i]['cb'] !== '') {
+//                            //
+//                            var int = parseInt(arrayD[i]['h']);
+//                            var int2 = parseInt(arrayD[i]['cb']);
+//                            var h = '';
+//                            var cb = '';
+//                            var s = parseInt(arrayD[i]['s']);
+//                            //
+//                            if (int > 50) {
+//                                //
+//                                h = 'II';
+//                            } else {
+//                                //
+//                                h = 'Hab. ' + int;
+//
+//                            }
+//                            //
+//                            if (int2 > 20) {
+//                                //
+//                                var b = int2 - 20;
+//                                //
+//                                cb = 'Baño ' + b;
+//                            } else {
+//                                //
+//                                cb = 'Cama ' + int2;
+//                            }
+//                            //
+//                            actualizarArrayTurnos(h, cb, s, int);
+//                        }
+//                    }
+//                }
+//            }, errorCallback // error attaching the callback
+//            );
+//}
 
 //
 function subscribirse() {
