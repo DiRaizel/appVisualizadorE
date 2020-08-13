@@ -195,6 +195,12 @@ document.addEventListener('deviceready', function () {
                 str2 = '';
                 str3 = '';
                 control = 0;
+            } else {
+                //
+                str = '';
+                str2 = '';
+                str3 = '';
+                control = 0;
             }
         }
     });
